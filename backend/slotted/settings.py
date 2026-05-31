@@ -173,3 +173,6 @@ EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True') == 'True'
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@slotted.local')
 
 FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:5173')
+
+CORS_URLS_REGEX = r'^/api/.*$'
+CORS_ALLOW_ALL_ORIGINS = True
