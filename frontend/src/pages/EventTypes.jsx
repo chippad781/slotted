@@ -58,7 +58,8 @@ export default function EventTypes() {
     setError('')
     try {
       if (editing === 'new') {
-        await api.post('/event-types/', form)
+        const payload = { ...form, slug: form.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') }
+        await api.post('/event-types/', payload)
       } else {
         await api.patch(`/event-types/${editing}/`, form)
       }
