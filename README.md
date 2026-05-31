@@ -12,7 +12,7 @@ React (Vite) on the frontend.
 > _Add your live demo URL and a couple of screenshots here once deployed._
 
 - Backend: `https://slotted-api.onrender.com`
-- Frontend: `https://slotted.vercel.app`
+- Frontend: `[https://slotted.vercel.app](https://slotted-sooty.vercel.app/dashboard)`
 
 ## Features
 
