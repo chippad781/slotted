@@ -3,7 +3,7 @@ import api from '../api'
 
 const EMPTY = {
   title: '',
-  slug: title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
+  slug: '',
   description: '',
   duration_minutes: 30,
   buffer_before_minutes: 0,
