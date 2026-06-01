@@ -13,7 +13,7 @@ React (Vite) on the frontend.
 - Frontend: [https://slotted-sooty.vercel.app/dashboard](https://slotted-sooty.vercel.app/dashboard)
 - ### Dashboard
 
-![Slotted dashboard](docs/dashboard.png)
+![Slotted dashboard](screenshots/screenshot.png)
 
 ## Features
 
