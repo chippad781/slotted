@@ -24,7 +24,7 @@ React (Vite) on the frontend.
 - Public booking page with day picker, time grid, and timezone-aware display
 - **Double-booking protection** via row-level locking + a partial unique
   constraint (see [Decisions](#decisions))
-- Email confirmations and 24-hour reminders sent asynchronously via Celery
+- Email confirmations via Celery (worker not deployed on free tier — emails log to console in current deployment)
 - Redis caching for availability lookups, invalidated on writes
 - Rate limiting on the public booking endpoint
 - Idempotency keys so a double-clicked submit doesn't create two bookings
