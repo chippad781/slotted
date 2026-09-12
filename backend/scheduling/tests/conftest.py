@@ -35,3 +35,15 @@ def event_type(host):
             end_time=time(17, 0),
         )
     return et
+
+@pytest.fixture(autouse=True)
+def clear_cache_between_tests():
+    """
+    DRF throttling and availability caching both use the Django cache.
+    Without clearing it, throttle counters leak across tests and the
+    suite's result depends on execution order.
+    """
+    from django.core.cache import cache
+    cache.clear()
+    yield
+    cache.clear()

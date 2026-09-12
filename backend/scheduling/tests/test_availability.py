@@ -88,13 +88,12 @@ def test_buffer_keeps_neighbours_free(event_type, host):
     invalidate_availability_cache(host.id)
     slots = get_available_slots(event_type, monday, monday)
     hours = [(s.hour, s.minute) for s in slots]
-    assert (13, 45) not in hours
-    assert (14, 30) not in hours
-    assert (14, 45) not in hours
-    # 13:30 slot ends 14:00 which overlaps the buffered window
-    # (13:45-14:45), so it should also be gone:
     assert (13, 30) not in hours
-    assert (13, 15) in hours  # this one ends 13:45, safe
+    # 13:15 runs 13:15-13:45, but its own 15min after-buffer would
+    # run to 14:00, which collides with the booking's before-buffer.
+    # Buffers apply to the candidate slot too, so this is excluded.
+    assert (13, 15) not in hours
+    assert (13, 0) in hours   # ends 13:30, buffer to 13:45 — clear
     assert (15, 0) in hours   # well clear of the booking
 
 

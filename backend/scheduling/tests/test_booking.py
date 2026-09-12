@@ -15,6 +15,55 @@ def _next_monday():
     days_ahead = (7 - today.weekday()) % 7 + 7
     return today + timedelta(days=days_ahead)
 
+@pytest.mark.django_db
+def test_overlapping_booking_with_different_start_is_rejected(api, event_type):
+    """
+    A 30-min booking at 10:15 overlaps a 10:00 booking, even though the
+    start times differ. The old (host, start) unique constraint did not
+    catch this case; the exclusion constraint does.
+    """
+    monday = _next_monday()
+    first = datetime.combine(monday, time(10, 0), tzinfo=timezone.utc)
+    overlapping = datetime.combine(monday, time(10, 15), tzinfo=timezone.utc)
+
+    resp = api.post('/api/public/bookings/', {
+        'event_type_id': event_type.id,
+        'start': first.isoformat(),
+        'invitee_name': 'Alice',
+        'invitee_email': 'alice@example.com',
+    }, format='json')
+    assert resp.status_code == 201
+
+    resp = api.post('/api/public/bookings/', {
+        'event_type_id': event_type.id,
+        'start': overlapping.isoformat(),
+        'invitee_name': 'Bob',
+        'invitee_email': 'bob@example.com',
+    }, format='json')
+    assert resp.status_code == 409
+    assert Booking.objects.count() == 1
+
+
+@pytest.mark.django_db
+def test_back_to_back_bookings_are_allowed(api, event_type):
+    """
+    10:00-10:30 and 10:30-11:00 share a boundary but do not overlap.
+    This is why the range uses '[)' — inclusive start, exclusive end.
+    """
+    monday = _next_monday()
+    first = datetime.combine(monday, time(10, 0), tzinfo=timezone.utc)
+    second = datetime.combine(monday, time(10, 30), tzinfo=timezone.utc)
+
+    for when, who in ((first, 'alice'), (second, 'bob')):
+        resp = api.post('/api/public/bookings/', {
+            'event_type_id': event_type.id,
+            'start': when.isoformat(),
+            'invitee_name': who,
+            'invitee_email': f'{who}@example.com',
+        }, format='json')
+        assert resp.status_code == 201
+
+    assert Booking.objects.count() == 2
 
 @pytest.fixture
 def api():
