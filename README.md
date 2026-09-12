@@ -169,20 +169,41 @@ The solution has three layers:
    that we hold the lock — somebody else may have just committed. So we
    call `is_slot_available()` again *inside* the transaction.
 
-3. **A partial unique constraint as the safety net.** On the `Booking`
-   model:
-   ```python
-   models.UniqueConstraint(
-       fields=['host', 'start'],
-       condition=models.Q(status='confirmed'),
-       name='unique_host_start_when_confirmed',
-   )
-   ```
-   If the application logic ever has a bug, the database will refuse the
-   second insert. We catch `IntegrityError` and return 409.
+3. 3. **An exclusion constraint as the safety net.** On the `Booking` model:
 
-The concurrency test (`test_concurrency.py`) fires two threads at the
-same slot and asserts that exactly one gets 201 and the other gets 409.
+```python
+    ExclusionConstraint(
+        name='no_overlapping_confirmed_bookings',
+        expressions=[
+            (TsTzRange('start', 'end', RangeBoundary()),
+             RangeOperators.OVERLAPS),
+            ('host', RangeOperators.EQUAL),
+        ],
+        condition=models.Q(status='confirmed'),
+    )
+```
+
+    This rejects *any* overlapping confirmed booking for the same host,
+    not just two with an identical start time — a 60-minute booking at
+    15:00 and a 30-minute one at 15:30 both pass a `(host, start)`
+    unique constraint but are correctly refused here. The range uses
+    `[)` bounds, so consecutive bookings (15:00–15:30 and 15:30–16:00)
+    share a boundary without overlapping. Requires the `btree_gist`
+    extension, enabled in migration `0002`.
+
+    A narrower unique constraint on `(host, start)` is kept alongside
+    it. It's technically redundant now, but gives a clearer error for
+    the most common collision. We catch `IntegrityError` and return 409.
+
+### What the constraint does and doesn't guarantee
+
+The exclusion constraint enforces that no two confirmed *meetings*
+overlap. It does not enforce `buffer_before_minutes` /
+`buffer_after_minutes` — those are applied in `get_available_slots()`
+and `is_slot_available()`, which also account for the candidate slot's
+own buffers, not just the existing booking's. Buffers are a scheduling
+preference; non-overlap is a correctness invariant, and only the
+latter belongs in the database.
 
 ### Time zones
 
