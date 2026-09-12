@@ -252,7 +252,7 @@ the way.
 1. New Web Service from this repo, root directory `backend/`.
 2. Build command: `pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate`
 3. Start command: `gunicorn slotted.wsgi:application --bind 0.0.0.0:$PORT`
-4. 4. Add a Render Postgres instance. For Redis, this deployment uses a
+4. Add a Render Postgres instance. For Redis, this deployment uses a
    free [Upstash](https://upstash.com) database rather than Render's
    add-on — note that Upstash requires TLS, so `REDIS_URL` must use
    the `rediss://` scheme (two s's), not `redis://`.
