@@ -2,6 +2,14 @@ from django.conf import settings
 from django.db import models
 from django.utils.text import slugify
 
+from django.contrib.postgres.constraints import ExclusionConstraint
+from django.contrib.postgres.fields import (
+    DateTimeRangeField,
+    RangeBoundary,
+    RangeOperators,
+)
+from django.db.models import Func
+
 
 class EventType(models.Model):
     """
@@ -99,15 +107,21 @@ class Block(models.Model):
     def __str__(self):
         return f"Block {self.start} -> {self.end} ({self.reason or 'no reason'})"
 
+class TsTzRange(Func):
+    """Builds a Postgres tstzrange() from the start and end columns."""
+    function = "TSTZRANGE"
+    output_field = DateTimeRangeField()
 
 class Booking(models.Model):
     """
     A confirmed appointment between a host and an invitee.
     Times are always stored in UTC.
 
-    The (host, start) unique constraint when status=confirmed is the
-    safety net against the double-booking race. The real protection is
-    SELECT FOR UPDATE in the booking view, but the DB has our back.
+    Two DB-level guards against the double-booking race:
+    an exclusion constraint rejecting any overlapping confirmed
+    booking for the same host, plus a narrower unique constraint on
+    (host, start). SELECT FOR UPDATE in the booking view is the
+    first line of defence; these are the backstop.
     """
     STATUS_CONFIRMED = 'confirmed'
     STATUS_CANCELLED = 'cancelled'
@@ -156,6 +170,15 @@ class Booking(models.Model):
                 fields=['host', 'idempotency_key'],
                 condition=models.Q(idempotency_key__isnull=False),
                 name='unique_host_idempotency_key',
+            ),
+            ExclusionConstraint(
+                name='no_overlapping_confirmed_bookings',
+                expressions=[
+                    (TsTzRange('start', 'end', RangeBoundary()),
+                     RangeOperators.OVERLAPS),
+                    ('host', RangeOperators.EQUAL),
+                ],
+                condition=models.Q(status='confirmed'),
             ),
         ]
         indexes = [
