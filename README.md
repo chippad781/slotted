@@ -9,8 +9,8 @@ React (Vite) on the frontend.
 
 ## Demo
 
-- Backend: `https://slotted-api.onrender.com`
-- Frontend: [https://slotted-sooty.vercel.app/dashboard](https://slotted-sooty.vercel.app/dashboard)
+- Backend: `[https://slotted-api.onrender.com](https://slotted.onrender.com/api/public/demo/)`
+- Frontend: [https://slotted-sooty.vercel.app/dashboard](https://slotted-sooty.vercel.app/demo/intro-chat)
 - ### Dashboard
 
 ![Slotted dashboard](screenshots/screenshot.png)
