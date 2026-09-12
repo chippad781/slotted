@@ -169,7 +169,7 @@ The solution has three layers:
    that we hold the lock — somebody else may have just committed. So we
    call `is_slot_available()` again *inside* the transaction.
 
-3. 3. **An exclusion constraint as the safety net.** On the `Booking` model:
+3. **An exclusion constraint as the safety net.** On the `Booking` model:
 
 ```python
     ExclusionConstraint(
