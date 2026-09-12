@@ -252,10 +252,13 @@ the way.
 1. New Web Service from this repo, root directory `backend/`.
 2. Build command: `pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate`
 3. Start command: `gunicorn slotted.wsgi:application --bind 0.0.0.0:$PORT`
-4. Add a Postgres add-on and a Redis add-on.
+4. 4. Add a Render Postgres instance. For Redis, this deployment uses a
+   free [Upstash](https://upstash.com) database rather than Render's
+   add-on — note that Upstash requires TLS, so `REDIS_URL` must use
+   the `rediss://` scheme (two s's), not `redis://`.
 5. Set env vars: `DJANGO_SECRET_KEY`, `DJANGO_DEBUG=False`,
-   `DJANGO_ALLOWED_HOSTS=slotted-api.onrender.com`, plus the DB and
-   Redis connection strings Render provides.
+   `DJANGO_ALLOWED_HOSTS=slotted.onrender.com`, the Postgres
+   connection string Render provides, and `REDIS_URL` from Upstash.
 6. Add a second Worker service with the same env and start command
    `celery -A slotted worker -l info`.
 
