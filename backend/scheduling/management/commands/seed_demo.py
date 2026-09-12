@@ -28,7 +28,7 @@ class Command(BaseCommand):
             slug="intro-chat",
             defaults={
                 "title": "30 min intro chat",
-                "description": "A short demo meeting. Book any weekday slot.",
+                "description": "A short demo meeting. Book any available slot.",
                 "duration_minutes": 30,
                 "buffer_after_minutes": 10,
                 "advance_days": 14,
@@ -36,7 +36,7 @@ class Command(BaseCommand):
             },
         )
 
-        for day in range(AvailabilityRule.MONDAY, AvailabilityRule.SATURDAY):
+        for day in range(AvailabilityRule.MONDAY, AvailabilityRule.SUNDAY + 1):
             AvailabilityRule.objects.get_or_create(
                 host=user,
                 day_of_week=day,
