@@ -81,7 +81,7 @@ export default function BookingPage() {
         <p>
           <strong>{new Date(success.start).toLocaleString()}</strong>
         </p>
-        <p className="muted">Confirmation email sent to {success.invitee_email}.</p>
+        <p className="muted">We'll email a confirmation to {success.invitee_email}.</p>
       </div>
     )
   }
