@@ -152,8 +152,17 @@ CACHES = {
 }
 
 # Celery
-CELERY_BROKER_URL = REDIS_URL
-CELERY_RESULT_BACKEND = REDIS_URL
+# Celery's Redis transport rejects a rediss:// URL unless ssl_cert_reqs
+# is given explicitly. Django's cache doesn't require it, so this only
+# bites the broker/result backend.
+if REDIS_URL.startswith('rediss://'):
+    _sep = '&' if '?' in REDIS_URL else '?'
+    CELERY_REDIS_URL = f'{REDIS_URL}{_sep}ssl_cert_reqs=CERT_NONE'
+else:
+    CELERY_REDIS_URL = REDIS_URL
+
+CELERY_BROKER_URL = CELERY_REDIS_URL
+CELERY_RESULT_BACKEND = CELERY_REDIS_URL
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'

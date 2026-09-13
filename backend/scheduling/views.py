@@ -8,6 +8,9 @@ from rest_framework.decorators import api_view, permission_classes, throttle_cla
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.throttling import ScopedRateThrottle, AnonRateThrottle
+import logging
+
+logger = logging.getLogger(__name__)
 
 from .models import EventType, AvailabilityRule, Block, Booking
 from .serializers import (
@@ -102,8 +105,14 @@ class CancelBookingView(APIView):
         booking.cancelled_reason = request.data.get('reason', '')
         booking.save()
         invalidate_availability_cache(request.user.id)
-        # fire-and-forget email
-        tasks.send_cancellation_email.delay(booking.id)
+            # fire-and-forget email
+        try:
+            tasks.send_cancellation_email.delay(booking.id)
+        except Exception:
+            logger.exception(
+                "Could not queue cancellation email for booking %s",
+                booking.id,
+            )
         return Response(BookingSerializer(booking).data)
 
 
@@ -247,11 +256,16 @@ class CreateBookingView(APIView):
         invalidate_availability_cache(event_type.host_id)
 
         # Async: send confirmation, schedule reminder
-        tasks.send_confirmation_email.delay(booking.id)
-        tasks.send_reminder_email.apply_async(
-            args=[booking.id],
-            eta=booking.start - timedelta(hours=24),
-        )
+        try:
+            tasks.send_confirmation_email.delay(booking.id)
+            tasks.send_reminder_email.apply_async(
+                args=[booking.id],
+                eta=booking.start - timedelta(hours=24),
+            )
+        except Exception:
+            logger.exception(
+                "Could not queue notification tasks for booking %s", booking.id
+            )
 
         return Response(
             BookingSerializer(booking).data, status=status.HTTP_201_CREATED
