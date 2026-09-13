@@ -1,3 +1,4 @@
+[![CI](https://github.com/chippad781/slotted/actions/workflows/ci.yml/badge.svg)](https://github.com/chippad781/slotted/actions/workflows/ci.yml)
 # Slotted
 
 A self-hosted Cal.com-style scheduling platform. Pick a username, set your
