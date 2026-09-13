@@ -12,9 +12,20 @@ React (Vite) on the frontend.
 
 - Backend: [https://slotted.onrender.com/api/public/demo/](https://slotted.onrender.com/api/public/demo/)
 - Frontend: [https://slotted-sooty.vercel.app/dashboard](https://slotted-sooty.vercel.app/demo/intro-chat)
-- ### Dashboard
+  
+### Public booking page
 
-![Slotted dashboard](screenshots/screenshot.png)
+What an invitee sees — no account needed.
+
+![Slotted booking page](screenshots/booking-page.png)
+
+### Confirmation
+
+![Booking confirmation](screenshots/confirmation.png)
+
+### Host dashboard
+
+![Slotted dashboard](screenshots/dashboard.png)
 
 ## Features
 
