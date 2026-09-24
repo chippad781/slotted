@@ -298,7 +298,7 @@ the way.
 ### Frontend (Vercel)
 
 1. Import the repo into Vercel, set root directory `frontend/`.
-2. Set `VITE_API_URL=https://slotted-api.onrender.com/api`.
+2. Set `VITE_API_URL=[https://slotted-api.onrender.com/api](https://slotted.onrender.com/api/)`.
 3. Deploy.
 
 Don't forget to set `CORS_ALLOWED_ORIGINS` on the backend to your
