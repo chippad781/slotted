@@ -11,7 +11,7 @@ React (Vite) on the frontend.
 ## Demo
 
 - Backend: [https://slotted.onrender.com/api/public/demo/](https://slotted.onrender.com/api/public/demo/)
-- Frontend: [https://slotted-sooty.vercel.app/dashboard](https://slotted-sooty.vercel.app/demo/intro-chat)
+- Frontend: [https://slotted-sooty.vercel.app/demo/intro-chat](https://slotted-sooty.vercel.app/demo/intro-chat)
   
 ### Public booking page
 
@@ -298,7 +298,7 @@ the way.
 ### Frontend (Vercel)
 
 1. Import the repo into Vercel, set root directory `frontend/`.
-2. Set `VITE_API_URL=[https://slotted-api.onrender.com/api](https://slotted.onrender.com/api/)`.
+2. Set `VITE_API_URL=[https://slotted.onrender.com/api](https://slotted.onrender.com/api/)`.
 3. Deploy.
 
 Don't forget to set `CORS_ALLOWED_ORIGINS` on the backend to your
